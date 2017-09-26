@@ -387,17 +387,11 @@ for(i in 1:8){
 
 ## Generate Usable Data - Data Exploration {.flexbox .vcenter .smaller}
 
-```{r, echo = TRUE, eval = FALSE, cache = TRUE}
-hist(log(as.matrix(temp.mat))[, 1])
-```
-
 ```{r, echo = TRUE, cache = TRUE, fig.height=4, fig.width=8}
 par(mfrow=c(2,4), mar=c(1,1,1,1), oma=c(1,1,0.5,0.5))
 for(i in 1:8){
   hist(log(as.matrix(temp.mat))[, i], main = "")
-  # image(matrix(as.matrix(temp.mat2)[, i], nrow = 1024), zlim = c(-2, 2), xaxt = "n", yaxt = "n")
 }
-
 ```
 
 
@@ -438,7 +432,7 @@ for(i in 1:8){
 
 ```{r, echo = TRUE, eval = FALSE, cache = TRUE}
 pca.mod <- prcomp(temp.mat2)
-temp.mat3 <- predict(pca.mod, temp.mat2)
+temp.mat3 <- scale(predict(pca.mod, temp.mat2))
 image(matrix(as.matrix(temp.mat3)[, 1], nrow = 1024), zlim = c(-2, 2),
       xaxt = "n", yaxt = "n")
 ```
@@ -446,12 +440,54 @@ image(matrix(as.matrix(temp.mat3)[, 1], nrow = 1024), zlim = c(-2, 2),
 ```{r, echo = FALSE, eval = TRUE, cache = TRUE, fig.height=4, fig.width=8}
 par(mfrow=c(2,4), mar=c(1,1,1,1), oma=c(0.5,0.5,0.5,0.5))
 pca.mod <- prcomp(temp.mat2)
-temp.mat3 <- predict(pca.mod, temp.mat2)
+temp.mat3 <- scale(predict(pca.mod, temp.mat2))
 for(i in 1:8){
   image(matrix(as.matrix(temp.mat3)[, i], nrow = 1024), zlim = c(-2, 2), xaxt = "n", yaxt = "n")
 }
 ```
 
+## Generate Usable Data - PCA'ed Data {.flexbox .vcenter}
+
+Generating RGB images using the `imager` libary
+
+```{r, echo = TRUE, eval = FALSE, cache = TRUE, message = FALSE}
+library(imager)
+prep.img <- function(vec, expo = 1){
+  mat <- matrix(vec, nrow = 1024)
+  temp.mat <- mat - min(mat)
+  temp.mat <- (temp.mat / max(temp.mat))[, 1024:1]
+  temp.mat <- temp.mat ^ expo
+  c(temp.mat)
+}
+#expo - adjusts the shape of distribution -> adjusts RGB coloring
+
+col <- cbind(r <- prep.img(temp.mat3[, 1], .5),
+             g <- prep.img(temp.mat3[, 2], .5),
+           b <- prep.img(temp.mat3[, 3], 3))
+dim(col) <- c(1024, 1024, 1, 3)
+plot(cimg(col), axes = F)
+```
+## Generate Usable Data - PCA'ed Data {.flexbox .vcenter}
+
+Generating RGB images using the `imager` libary
+
+```{r, echo = FALSE, eval = TRUE, cache = TRUE, message = FALSE}
+library(imager)
+prep.img <- function(vec, expo = 1){
+  mat <- matrix(vec, nrow = 1024)
+  temp.mat <- mat - min(mat)
+  temp.mat <- (temp.mat / max(temp.mat))[, 1024:1]
+  temp.mat <- temp.mat ^ expo
+  c(temp.mat)
+}
+#expo - adjusts the shape of distribution -> adjusts RGB coloring
+
+col <- cbind(r <- prep.img(temp.mat3[, 1], .5),
+             g <- prep.img(temp.mat3[, 2], .5),
+           b <- prep.img(temp.mat3[, 3], 3))
+dim(col) <- c(1024, 1024, 1, 3)
+plot(cimg(col), axes = F)
+```
 
 ## Generate Usable Data - Scale  {.smaller}
 

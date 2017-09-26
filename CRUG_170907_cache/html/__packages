@@ -4,3 +4,6 @@ iterators
 doParallel
 feather
 reticulate
+plyr
+magrittr
+imager
